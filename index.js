@@ -62,6 +62,19 @@ app.post('/magic', function (req, res) {
 //   { trainingSet:
 //      offset: 0
 // }
+    function machineFuelType(fuel_type) {
+
+        return {
+            fuel_type_B : fuel_type === 'B',
+            fuel_type_D : fuel_type === 'D',
+            fuel_type_E : fuel_type === 'E',
+            fuel_type_G : fuel_type === 'G',
+            fuel_type_PH : fuel_type === 'PH',
+
+        }
+
+    }
+
     var body = req.body || {};
     var trainSet = body.trainingSet || null;
     var net = new brain.NeuralNetwork();
@@ -70,7 +83,7 @@ app.post('/magic', function (req, res) {
         offset = trainSet.length;
         var learnSet = [];
         trainSet.forEach(function (item) {
-            learnSet.push({input: [item.input.fuel_type], output: {match: item.output.match}});
+            learnSet.push({input: machineFuelType(item.input.fuel_type), output: {match: item.output.match}});
         });
 
         net.train(learnSet);
@@ -80,20 +93,22 @@ app.post('/magic', function (req, res) {
     var mysql = client.createConnection(mysqlConf);
     var whereQry = buildWhere(body.filterInclude);
     console.log(whereQry);
+
     mysql.table('vehicle').field(['vin', 'brand', 'model_de', 'engine_de', 'fuel_type', 'engine_capacity',
         'power_hp', 'sale_type', 'emissions', 'additional_title', 'mileage', 'price', 'seats', 'sport_score',
         'family_score', 'eco_score', 'price_score', 'offroad_score', 'design_score'])
-        .limit(offset, count).where(whereQry).order('last_inspection DESC').select().then(function (data) {
+        .limit(offset, count + (count * 4)).where(whereQry).order('last_inspection DESC').select().then(function (data) {
             data.map(function (item) {
 
                 var _item = item;
-                item.match = trainSet.length!==0 ? net.run([_item.fuel_type]).match : null;
+                item.match = trainSet.length!==0 ? net.run(machineFuelType(_item.fuel_type)).match : null;
                 return item;
-            }).sort(function (a, b) {
+            });
+               data .sort(function (a, b) {
                 if (a.match < b.match)
-                    return -1;
-                if (a.match > b.match)
                     return 1;
+                if (a.match > b.match)
+                    return -1;
                 return 0;
             });
             var promisify = function (item) {
@@ -106,13 +121,13 @@ app.post('/magic', function (req, res) {
             };
 
             var imgPromise = [];
-            for (i = 0; i < data.length; i++) {
+            for (i = 0; i < count; i++) {
                 imgPromise.push(promisify(data[i]));
             }
 
             q.allSettled(imgPromise)
                 .then(function (results) {
-                    res.json({data: data, offset: offset + count});
+                    res.json({data: data.slice(0,count), offset: offset + count});
                 },function(err){
                     res.json({error :err});
                 });
