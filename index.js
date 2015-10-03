@@ -19,6 +19,9 @@ var mysqlConf ={
     port: process.env.MYSQL_PORT
 };
 app.use(bodyParser.json());
+app.get('/',function(req,res){
+    res.send('heelloo');
+});
 app.post('/magic', function (req, res) {
 
 //   { trainingSet:
