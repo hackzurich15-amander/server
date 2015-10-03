@@ -62,7 +62,7 @@ app.post('/magic', function (req, res) {
     var trainSet = body.trainingSet || null;
     var net = new brain.NeuralNetwork();
     var offset = body.offset || 0;
-    if (trainSet) {
+    if (trainSet && trainSet.length) {
         offset = trainSet.length;
         var learnSet = [];
         trainSet.forEach(function (item) {
