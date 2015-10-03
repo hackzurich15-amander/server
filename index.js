@@ -70,7 +70,7 @@ app.post('/magic', function (req, res) {
         offset = trainSet.length;
         var learnSet = [];
         trainSet.forEach(function (item) {
-            learnSet.push({input: [item.input.price], output: {match: item.output.match}});
+            learnSet.push({input: [item.input.fuel_type], output: {match: item.output.match}});
         });
 
         net.train(learnSet);
@@ -87,7 +87,7 @@ app.post('/magic', function (req, res) {
             data.map(function (item) {
 
                 var _item = item;
-                item.match = trainSet.length!==0 ? net.run([_item.price]).match : null;
+                item.match = trainSet.length!==0 ? net.run([_item.fuel_type]).match : null;
                 return item;
             }).sort(function (a, b) {
                 if (a.match < b.match)
