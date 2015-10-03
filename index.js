@@ -62,7 +62,7 @@ app.post('/magic', function (req, res) {
     var trainSet = body.trainingSet || null;
     var net = new brain.NeuralNetwork();
     var offset = body.offset || 0;
-    if (trainSet && trainSet.length) {
+    if (trainSet && trainSet.length !== 0) {
         offset = trainSet.length;
         var learnSet = [];
         trainSet.forEach(function (item) {
@@ -83,7 +83,7 @@ app.post('/magic', function (req, res) {
             data.map(function (item) {
 
                 var _item = item;
-                item.match = trainSet ? net.run([_item.price]).match : null;
+                item.match = trainSet.length!==0 ? net.run([_item.price]).match : null;
                 return item;
             }).sort(function (a, b) {
                 if (a.match < b.match)
@@ -92,6 +92,7 @@ app.post('/magic', function (req, res) {
                     return 1;
                 return 0;
             });
+            console.log('data sorted',data);
             var promisify = function (item) {
                 var deferred = q.defer();
                 imgLoader.loadImg(item.vin).then(function (imageUrl) {
@@ -109,6 +110,7 @@ app.post('/magic', function (req, res) {
 
             q.allSettled(imgPromise)
                 .then(function (results) {
+                    console.log(results);
                     res.json({data: data, offset: offset + count});
                 },function(err){
                     res.json({error :err});
