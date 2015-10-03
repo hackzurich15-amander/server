@@ -17,10 +17,10 @@ var buildWhere = function buildWhereF(fInclude) {
         fInclude = {};
     }
     var qry = '';
-    if (fInclude.hasOwnProperty('priceMax')) {
+    if (fInclude.hasOwnProperty('priceMax') && fInclude.priceMax > 0) {
         qry += '`price` < ' + fInclude.priceMax;
     }
-    if (fInclude.hasOwnProperty('psMin')) {
+    if (fInclude.hasOwnProperty('psMin') && fInclude.psMin > 0) {
         if (qry) {
             qry += ' AND ';
         }
@@ -97,7 +97,6 @@ app.post('/magic', function (req, res) {
                 var deferred = q.defer();
                 imgLoader.loadImg(item.vin).then(function (imageUrl) {
                     item.imageUrl = [imageUrl];
-                    console.log('image loaded for ' + item.vin + ' url: ' + imageUrl);
                     deferred.resolve();
                 }, deferred.reject);
                 return deferred.promise;
@@ -110,7 +109,6 @@ app.post('/magic', function (req, res) {
 
             q.allSettled(imgPromise)
                 .then(function (results) {
-                    console.log(results);
                     res.json({data: data, offset: offset + count});
                 },function(err){
                     res.json({error :err});
