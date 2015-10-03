@@ -4,7 +4,7 @@ var express = require('express');
 var q = require('q');
 var app = express();
 var bodyParser = require('body-parser');
-var server = app.listen(process.env.PORT, function () {
+var server = app.listen(process.env.PORT || 3000, function () {
     var host = server.address().address;
     var port = server.address().port;
 
@@ -29,10 +29,14 @@ app.post('/magic', function (req, res) {
 // }
     var body = req.body || {};
     var trainSet = body.trainingSet || null;
-
+    var net = new brain.NeuralNetwork();
     if (trainSet) {
-        var net = new brain.NeuralNetwork();
-        net.train(trainSet);
+        var learnSet = [];
+        trainSet.forEach(function(item){
+           learnSet.push( {input : [item.input.price] , output : { match : item.output.match}});
+        });
+
+        net.train(learnSet);
     }
     var offset = body.offset || 0;
     var count = body.count || 100;
@@ -55,7 +59,9 @@ app.post('/magic', function (req, res) {
         'offroad_score',
         'design_score']).limit(offset, count).select().then(function (data) {
         data.map(function (item) {
-            item.match = trainSet  ? net.run(item) : null;
+            var _item = item;
+            delete _item.vin;
+            item.match = trainSet  ? net.run([_item.price]).match : null;
         }).sort(function (a, b) {
             if (a.match < b.match)
                 return -1;
@@ -63,6 +69,7 @@ app.post('/magic', function (req, res) {
                 return 1;
             return 0;
         });
+        console.log('sortedArray');
         res.json({data : data, offset : offset + count});
     }).catch(function (e) {
         console.log(e);
