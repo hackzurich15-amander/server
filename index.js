@@ -26,7 +26,7 @@ var buildWhere = function buildWhereF(fInclude) {
         }
         qry += '`power_hp` > ' + fInclude.psMin;
     }
-    if (fInclude.hasOwnProperty('brand')) {
+    if (fInclude.hasOwnProperty('brand') && fInclude.brand) {
         if (qry) {
             qry += ' AND ';
         }
