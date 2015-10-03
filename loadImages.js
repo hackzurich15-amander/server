@@ -15,7 +15,7 @@ LoadImages.prototype.loadImg = function (vid) {
     request('http://api.hackzurich.amag.ch/hackzurich/vehicle/'+vid+'.json', function (error, response, body) {
         if (!error && response.statusCode == 200) {
            var vehicleImages = JSON.parse(body).vehicleImages;
-            deferred.resolve('http://api.hackzurich.amag.ch/hackzurich/image/'+vehicleImages[0].id+'/thumbnail');
+            deferred.resolve('http://api.hackzurich.amag.ch/hackzurich/image/'+vehicleImages[0].id+'/width/500');
         }
 
         deferred.reject(error)
