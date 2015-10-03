@@ -4,7 +4,7 @@ var express = require('express');
 var q = require('q');
 var app = express();
 var bodyParser = require('body-parser');
-var server = app.listen(process.env.SRV_PORT || 80, function () {
+var server = app.listen(20000, function () {
     var host = process.env.SRV_ADDRESS || server.address().address;
     var port = server.address().port;
 
