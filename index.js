@@ -32,6 +32,10 @@ var buildWhere = function buildWhereF(fInclude) {
         }
         qry += '`brand` LIKE \'' + fInclude.brand + '\'';
     }
+    if(qry){
+        qry += ' AND ';
+    }
+    qry +='`last_inspection` not like \'\' ';
     return qry;
 };
 
@@ -79,7 +83,7 @@ app.post('/magic', function (req, res) {
     mysql.table('vehicle').field(['vin', 'brand', 'model_de', 'engine_de', 'fuel_type', 'engine_capacity',
         'power_hp', 'sale_type', 'emissions', 'additional_title', 'mileage', 'price', 'seats', 'sport_score',
         'family_score', 'eco_score', 'price_score', 'offroad_score', 'design_score'])
-        .limit(offset, count).where(whereQry).select().then(function (data) {
+        .limit(offset, count).where(whereQry).order('last_inspection DESC').select().then(function (data) {
             data.map(function (item) {
 
                 var _item = item;
@@ -92,7 +96,6 @@ app.post('/magic', function (req, res) {
                     return 1;
                 return 0;
             });
-            console.log('data sorted',data);
             var promisify = function (item) {
                 var deferred = q.defer();
                 imgLoader.loadImg(item.vin).then(function (imageUrl) {
