@@ -53,7 +53,7 @@ app.post('/magic', function (req, res) {
         'eco_score',
         'price_score',
         'offroad_score',
-        'design_score']).limit(offset, step).select().then(function (data) {
+        'design_score']).limit(offset, count).select().then(function (data) {
         data.map(function (item) {
             item.match = trainSet  ? net.run(item) : null;
         }).sort(function (a, b) {
@@ -63,7 +63,7 @@ app.post('/magic', function (req, res) {
                 return 1;
             return 0;
         });
-        res.json({data : data, offset : offset + step});
+        res.json({data : data, offset : offset + count});
     }).catch(function (e) {
         console.log(e);
         console.log(mysqlConf)
