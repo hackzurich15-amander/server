@@ -97,7 +97,7 @@ app.post('/magic', function (req, res) {
     mysql.table('vehicle').field(['vin', 'brand', 'model_de', 'engine_de', 'fuel_type', 'engine_capacity',
         'power_hp', 'sale_type', 'emissions', 'additional_title', 'mileage', 'price', 'seats', 'sport_score',
         'family_score', 'eco_score', 'price_score', 'offroad_score', 'design_score'])
-        .limit(offset, count + (count * 4)).where(whereQry).order('last_inspection DESC').select().then(function (data) {
+        .limit(offset, count + (count +80)).where(whereQry).order('last_inspection DESC').select().then(function (data) {
             data.map(function (item) {
 
                 var _item = item;
