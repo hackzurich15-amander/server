@@ -69,8 +69,7 @@ app.post('/magic', function (req, res) {
             fuel_type_D : fuel_type === 'D',
             fuel_type_E : fuel_type === 'E',
             fuel_type_G : fuel_type === 'G',
-            fuel_type_PH : fuel_type === 'PH',
-
+            fuel_type_PH : fuel_type === 'PH'
         }
 
     }
